@@ -24,17 +24,17 @@ spec:
             - name: POSTGRES_USER
               valueFrom:
                 secretKeyRef:
-                  name: laseris-website-secret
+                  name: laseris-website-secrets
                   key: postgres-user
             - name: POSTGRES_PASSWORD
               valueFrom:
                 secretKeyRef:
-                  name: laseris-website-secret
+                  name: laseris-website-secrets
                   key: postgres-password
             - name: POSTGRES_DB
               valueFrom:
                 secretKeyRef:
-                  name: laseris-website-secret
+                  name: laseris-website-secrets
                   key: postgres-db
             - name: PGDATA
               value: /var/lib/postgresql/data/pgdata
