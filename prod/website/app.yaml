@@ -19,7 +19,7 @@ spec:
         - name: github-registry
       containers:
         - name: laseris-website-app
-          image: ghcr.io/ptrrr/laseris-app:sha-7625f56
+          image: ghcr.io/ptrrr/laseris-app:sha-1b4dae0
           ports:
             - containerPort: 3000
           env:
@@ -42,22 +42,14 @@ spec:
               memory: 512Mi
           livenessProbe:
             httpGet:
-              path: /
+              path: /health
               port: 3000
-              httpHeaders:
-                # Basic Auth: Generate with: echo -n "username:password" | base64
-                - name: Authorization
-                  value: Basic bGFzZXJpczptaWNyb25lZWRsaW5n
             initialDelaySeconds: 30
             periodSeconds: 30
           readinessProbe:
             httpGet:
-              path: /
+              path: /health
               port: 3000
-              httpHeaders:
-                # Basic Auth: Generate with: echo -n "username:password" | base64
-                - name: Authorization
-                  value: Basic bGFzZXJpczptaWNyb25lZWRsaW5n
             initialDelaySeconds: 5
             periodSeconds: 10
 
