@@ -1,0 +1,19 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: laseris
+  namespace: argocd
+spec:
+  destination:
+    namespace: laseris-website
+    server: https://kubernetes.default.svc
+  source:
+    path: infra/website
+    repoURL: https://github.com/PTRRR/laseris
+    targetRevision: HEAD
+  sources: []
+  project: default
+  syncPolicy:
+    automated: null
+    syncOptions:
+      - CreateNamespace=true

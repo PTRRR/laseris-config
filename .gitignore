@@ -1,0 +1,6 @@
+*.pem
+.env
+kubeconfig.yaml
+postgres
+*secrets.yaml
+*secret.yaml
