@@ -26,6 +26,9 @@ kind: Endpoints
 metadata:
   name: laseris-ch-external
   namespace: laseris-website
+  annotations:
+    argocd.argoproj.io/sync-options: SkipDryRunOnMissingResource=true
+    argocd.argoproj.io/compare-options: IgnoreExtraneous=true
 subsets:
   - addresses:
       - ip: 83.166.138.23
