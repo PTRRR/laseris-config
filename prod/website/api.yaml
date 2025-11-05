@@ -6,7 +6,7 @@ metadata:
   labels:
     app: laseris-website-api
 spec:
-  replicas: 1
+  replicas: 0
   selector:
     matchLabels:
       app: laseris-website-api
