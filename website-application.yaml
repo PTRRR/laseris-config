@@ -14,10 +14,10 @@ spec:
   sources: []
   project: default
   syncPolicy:
-    # automated:
-    #   selfHeal: true
-    #   prune: true
     automated:
-      enabled: false
+      selfHeal: true
+      prune: true
+    # automated:
+    #   enabled: false
     syncOptions:
       - CreateNamespace=true
