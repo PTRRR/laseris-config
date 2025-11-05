@@ -8,7 +8,7 @@ spec:
     namespace: laseris-website
     server: https://kubernetes.default.svc
   source:
-    path: infra/website
+    path: prod/website
     repoURL: https://github.com/PTRRR/laseris
     targetRevision: HEAD
   sources: []
