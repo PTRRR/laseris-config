@@ -21,6 +21,7 @@ spec:
 
 ---
 # Endpoints for external laseris.ch proxy
+# Note: ArgoCD excludes Endpoints by default - this resource must be applied manually
 apiVersion: v1
 kind: Endpoints
 metadata:
@@ -29,6 +30,7 @@ metadata:
   annotations:
     argocd.argoproj.io/sync-options: SkipDryRunOnMissingResource=true
     argocd.argoproj.io/compare-options: IgnoreExtraneous=true
+    argocd.argoproj.io/sync-wave: "-1"
 subsets:
   - addresses:
       - ip: 83.166.138.23
