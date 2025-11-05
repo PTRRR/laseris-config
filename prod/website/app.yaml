@@ -44,12 +44,20 @@ spec:
             httpGet:
               path: /
               port: 3000
+              httpHeaders:
+                # Basic Auth: Generate with: echo -n "username:password" | base64
+                - name: Authorization
+                  value: Basic bGFzZXJpczptaWNyb25lZWRsaW5n
             initialDelaySeconds: 30
             periodSeconds: 30
           readinessProbe:
             httpGet:
               path: /
               port: 3000
+              httpHeaders:
+                # Basic Auth: Generate with: echo -n "username:password" | base64
+                - name: Authorization
+                  value: Basic bGFzZXJpczptaWNyb25lZWRsaW5n
             initialDelaySeconds: 5
             periodSeconds: 10
 
