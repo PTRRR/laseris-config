@@ -19,7 +19,7 @@ spec:
         - name: github-registry
       containers:
         - name: laseris-website-app
-          image: ghcr.io/ptrrr/laseris-app:sha-305a475
+          image: ghcr.io/ptrrr/laseris-app:sha-7625f56
           ports:
             - containerPort: 3000
           env:
