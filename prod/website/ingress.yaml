@@ -1,9 +1,9 @@
 # ===================================
-# FIXED CENTRALIZED INGRESS SETUP
+# TRAEFIK INGRESS CONFIGURATION
 # ===================================
 
 ---
-# 3. Create ClusterIssuer for Let's Encrypt (global scope)
+# ClusterIssuer for Let's Encrypt SSL
 apiVersion: cert-manager.io/v1
 kind: ClusterIssuer
 metadata:
@@ -20,49 +20,60 @@ spec:
             class: traefik
 
 ---
-# ExternalName service for proxying to laseris.ch
+# Endpoints for external laseris.ch proxy
+apiVersion: v1
+kind: Endpoints
+metadata:
+  name: laseris-ch-external
+  namespace: laseris-website
+subsets:
+  - addresses:
+      - ip: 83.166.138.23
+    ports:
+      - port: 443
+        name: https
+        protocol: TCP
+
+---
+# Service for external laseris.ch proxy
 apiVersion: v1
 kind: Service
 metadata:
-  name: laseris-ch-proxy-service
+  name: laseris-ch-external
   namespace: laseris-website
 spec:
-  type: ExternalName
-  externalName: laseris.ch
   ports:
     - port: 443
+      name: https
       protocol: TCP
 
 ---
+# Main Ingress - handles all routes
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
   name: main-ingress
   namespace: laseris-website
   annotations:
-    kubernetes.io/ingress.class: traefik
     cert-manager.io/cluster-issuer: letsencrypt-prod
-    traefik.ingress.kubernetes.io/redirect-entry-point: https
-    traefik.ingress.kubernetes.io/custom-response-headers: |
-      Strict-Transport-Security: max-age=31536000; includeSubDomains
-      X-Frame-Options: DENY
-      X-Content-Type-Options: nosniff
+    traefik.ingress.kubernetes.io/router.entrypoints: web,websecure
+    traefik.ingress.kubernetes.io/router.tls: "true"
+    traefik.ingress.kubernetes.io/router.middlewares: default-redirect-https@kubernetescrd
+    traefik.ingress.kubernetes.io/headers.stsSeconds: "31536000"
+    traefik.ingress.kubernetes.io/headers.stsIncludeSubdomains: "true"
+    traefik.ingress.kubernetes.io/headers.stsPreload: "true"
+    traefik.ingress.kubernetes.io/headers.frameDeny: "true"
+    traefik.ingress.kubernetes.io/headers.contentTypeNosniff: "true"
 spec:
+  ingressClassName: traefik
   tls:
     - hosts:
         - laseris.vpr-group.ch
-      secretName: kuma-tls-cert
+      secretName: laseris-tls-cert
   rules:
     - host: laseris.vpr-group.ch
       http:
         paths:
-          - path: /admin
-            pathType: Prefix
-            backend:
-              service:
-                name: laseris-website-api-service
-                port:
-                  number: 80
           - path: /api
             pathType: Prefix
             backend:
@@ -70,13 +81,15 @@ spec:
                 name: laseris-website-api-service
                 port:
                   number: 80
-          - path: /_next/webpack-hmr
+
+          - path: /admin
             pathType: Prefix
             backend:
               service:
                 name: laseris-website-api-service
                 port:
                   number: 80
+
           - path: /_next
             pathType: Prefix
             backend:
@@ -84,6 +97,7 @@ spec:
                 name: laseris-website-api-service
                 port:
                   number: 80
+
           - path: /__nextjs_original-stack-frame
             pathType: Prefix
             backend:
@@ -91,13 +105,7 @@ spec:
                 name: laseris-website-api-service
                 port:
                   number: 80
-          - path: /shop
-            pathType: Prefix
-            backend:
-              service:
-                name: laseris-ch-proxy-service
-                port:
-                  number: 443
+
           - path: /
             pathType: Prefix
             backend:
@@ -105,3 +113,53 @@ spec:
                 name: laseris-website-app-service
                 port:
                   number: 80
+
+---
+# ServersTransport for external HTTPS proxy
+apiVersion: traefik.io/v1alpha1
+kind: ServersTransport
+metadata:
+  name: insecure-transport
+  namespace: laseris-website
+spec:
+  insecureSkipVerify: true
+  serverName: laseris.ch
+
+---
+# Middleware to rewrite Host header to laseris.ch
+apiVersion: traefik.io/v1alpha1
+kind: Middleware
+metadata:
+  name: rewrite-host-header
+  namespace: laseris-website
+spec:
+  headers:
+    customRequestHeaders:
+      Host: laseris.ch
+      X-Forwarded-Host: laseris.ch
+
+---
+# IngressRoute for /shop external proxy
+apiVersion: traefik.io/v1alpha1
+kind: IngressRoute
+metadata:
+  name: shop-proxy-route
+  namespace: laseris-website
+spec:
+  entryPoints:
+    - web
+    - websecure
+  routes:
+    - match: Host(`laseris.vpr-group.ch`) && PathPrefix(`/shop`)
+      kind: Rule
+      middlewares:
+        - name: rewrite-host-header
+      services:
+        - name: laseris-ch-external
+          kind: Service
+          port: 443
+          scheme: https
+          passHostHeader: true
+          serversTransport: insecure-transport
+  tls:
+    secretName: laseris-tls-cert
