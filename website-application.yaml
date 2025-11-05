@@ -9,7 +9,7 @@ spec:
     server: https://kubernetes.default.svc
   source:
     path: prod/website
-    repoURL: https://github.com/PTRRR/laseris
+    repoURL: https://github.com/PTRRR/laseris-config
     targetRevision: HEAD
   sources: []
   project: default

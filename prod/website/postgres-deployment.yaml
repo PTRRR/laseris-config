@@ -2,7 +2,7 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: postgres
-  namespace: shared
+  namespace: laseris-website
   labels:
     app: postgres
 spec:
@@ -24,17 +24,17 @@ spec:
             - name: POSTGRES_USER
               valueFrom:
                 secretKeyRef:
-                  name: shared-secret
+                  name: laseris-website-secret
                   key: postgres-user
             - name: POSTGRES_PASSWORD
               valueFrom:
                 secretKeyRef:
-                  name: shared-secret
+                  name: laseris-website-secret
                   key: postgres-password
             - name: POSTGRES_DB
               valueFrom:
                 secretKeyRef:
-                  name: shared-secret
+                  name: laseris-website-secret
                   key: postgres-db
             - name: PGDATA
               value: /var/lib/postgresql/data/pgdata
@@ -51,14 +51,14 @@ spec:
       volumes:
         - name: postgres-storage
           persistentVolumeClaim:
-            claimName: postgres-pvc-shared
+            claimName: postgres-pvc-laseris-website
 
 ---
 apiVersion: v1
 kind: Service
 metadata:
   name: postgres-service
-  namespace: shared
+  namespace: laseris-website
   labels:
     app: postgres
 spec:
