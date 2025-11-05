@@ -81,6 +81,6 @@ spec:
             pathType: Prefix
             backend:
               service:
-                name: blocco-land-app-proxy
+                name: laseris-website-app-service
                 port:
                   number: 80
