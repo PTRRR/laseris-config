@@ -3,13 +3,6 @@
 # ===================================
 
 ---
-# 2. Create a dedicated namespace for ingress resources
-apiVersion: v1
-kind: Namespace
-metadata:
-  name: laseris-website
-
----
 # 3. Create ClusterIssuer for Let's Encrypt (global scope)
 apiVersion: cert-manager.io/v1
 kind: ClusterIssuer
