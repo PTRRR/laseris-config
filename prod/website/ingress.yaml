@@ -20,6 +20,20 @@ spec:
             class: traefik
 
 ---
+# ExternalName service for proxying to laseris.ch
+apiVersion: v1
+kind: Service
+metadata:
+  name: laseris-ch-proxy-service
+  namespace: laseris-website
+spec:
+  type: ExternalName
+  externalName: laseris.ch
+  ports:
+    - port: 443
+      protocol: TCP
+
+---
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
@@ -77,6 +91,13 @@ spec:
                 name: laseris-website-api-service
                 port:
                   number: 80
+          - path: /shop
+            pathType: Prefix
+            backend:
+              service:
+                name: laseris-ch-proxy-service
+                port:
+                  number: 443
           - path: /
             pathType: Prefix
             backend:
