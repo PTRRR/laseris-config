@@ -35,10 +35,10 @@ spec:
               value: "0.0.0.0"
           resources:
             limits:
-              cpu: 400m
-              memory: 512Mi
+              cpu: 1000m
+              memory: 1024Mi
             requests:
-              cpu: 300m
+              cpu: 600m
               memory: 512Mi
           livenessProbe:
             httpGet:
