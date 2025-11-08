@@ -217,7 +217,7 @@ spec:
 apiVersion: traefik.io/v1alpha1
 kind: IngressRoute
 metadata:
-  name: shop-proxy-route
+  name: shop-proxy-route-2
   namespace: laseris-website
 spec:
   entryPoints:
