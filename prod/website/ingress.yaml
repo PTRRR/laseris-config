@@ -74,9 +74,52 @@ spec:
   tls:
     - hosts:
         - laseris.vpr-group.ch
+        - dev.laseris.ch
       secretName: laseris-tls-cert
   rules:
     - host: laseris.vpr-group.ch
+      http:
+        paths:
+          - path: /api
+            pathType: Prefix
+            backend:
+              service:
+                name: laseris-website-api-service
+                port:
+                  number: 80
+
+          - path: /admin
+            pathType: Prefix
+            backend:
+              service:
+                name: laseris-website-api-service
+                port:
+                  number: 80
+
+          - path: /_next
+            pathType: Prefix
+            backend:
+              service:
+                name: laseris-website-api-service
+                port:
+                  number: 80
+
+          - path: /__nextjs_original-stack-frame
+            pathType: Prefix
+            backend:
+              service:
+                name: laseris-website-api-service
+                port:
+                  number: 80
+
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: laseris-website-app-service
+                port:
+                  number: 80
+    - host: dev.laseris.ch
       http:
         paths:
           - path: /api
@@ -156,6 +199,32 @@ spec:
     - websecure
   routes:
     - match: Host(`laseris.vpr-group.ch`) && PathPrefix(`/shop`)
+      kind: Rule
+      middlewares:
+        - name: rewrite-host-header
+      services:
+        - name: laseris-ch-external
+          kind: Service
+          port: 443
+          scheme: https
+          passHostHeader: true
+          serversTransport: insecure-transport
+  tls:
+    secretName: laseris-tls-cert
+
+---
+# IngressRoute for /shop external proxy
+apiVersion: traefik.io/v1alpha1
+kind: IngressRoute
+metadata:
+  name: shop-proxy-route
+  namespace: laseris-website
+spec:
+  entryPoints:
+    - web
+    - websecure
+  routes:
+    - match: Host(`dev.laseris.ch`) && PathPrefix(`/shop`)
       kind: Rule
       middlewares:
         - name: rewrite-host-header
