@@ -63,7 +63,7 @@ spec:
                   valueFrom:
                     secretKeyRef:
                       name: laseris-website-secrets
-                      key: s3-bucket
+                      key: db-backup-s3-bucket
                 - name: S3_ENDPOINT
                   valueFrom:
                     secretKeyRef:
