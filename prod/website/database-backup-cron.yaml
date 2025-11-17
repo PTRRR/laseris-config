@@ -34,7 +34,7 @@ spec:
                     --access-key "$S3_ACCESS_KEY" \
                     --secret-key "$S3_SECRET_KEY" \
                     --region "$S3_REGION" \
-                    --location invoices-backups \
+                    --location backups \
                     --retention "${RETENTION:-30d}"
               env:
                 - name: DB_HOST
